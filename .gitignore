@@ -1,0 +1,8 @@
+node_modules
+src/index.ts
+typings
+dist
+es
+lib
+docs/
+*.tar
