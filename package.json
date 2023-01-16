@@ -1,6 +1,6 @@
 {
   "name": "yatter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "tool collection",
   "main": "lib/index.js",
   "module": "es/index.mjs",
@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/leemotive/yatter/issues"
   },
-  "homepage": "https://github.com/leemotive/yatter#readme",
+  "homepage": "https://leemotive.github.io/yatter/",
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
     "@rollup/plugin-typescript": "^10.0.1",
