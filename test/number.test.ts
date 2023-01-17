@@ -9,6 +9,7 @@ import {
   sum,
   avg,
   toThousand,
+  divide,
 } from '../src/number';
 
 describe('shiftLeft', () => {
@@ -101,5 +102,16 @@ describe('toThousand', () => {
     [-3412563.26, undefined, '-3,412,563.26'],
   ])('toThousand-%#', (input, option, result) => {
     expect(toThousand(input, option)).toBe(result);
+  });
+});
+
+describe('divide', () => {
+  test.each([
+    [23, 4, [5, 3]],
+    [16, 4, [4, 0]],
+    [2, 4, [0, 2]],
+    [-5, 3, [-1, -2]],
+  ])('divide-%#', (dividend, divisor, result) => {
+    expect(divide(dividend, divisor)).toEqual(result);
   });
 });

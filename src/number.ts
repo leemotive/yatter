@@ -145,3 +145,15 @@ export function toThousand(
   const from = typeof n === 'string' && trim ? +n : n;
   return `${from}`.replace(/(-?\d{1,3})(?=(?:\d{3})+[.$])/g, '$1,');
 }
+
+/**
+ * 除法运算返回商和余数组成的数组
+ * @param dividend - 被除数
+ * @param divisor - 除数
+ * @returns 数组 [商, 余数]
+ */
+export function divide(dividend: number, divisor: number) {
+  const quotient = Math.trunc(dividend / divisor);
+  const remainder = dividend % divisor;
+  return [quotient, remainder];
+}
