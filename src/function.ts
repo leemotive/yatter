@@ -1,3 +1,7 @@
+type DebounceOption<T> = {
+  trailing?: T;
+  leading?: T extends false | undefined ? true : boolean;
+};
 /**
  * 防抖
  * @param fun
@@ -7,12 +11,17 @@
  * @param option.trailing - 是否保证最后一次很行 default is false
  * @returns
  */
-export function debounce<F extends AnyFunction>(fun: F, delay: number, { leading = true, trailing = false } = {}) {
+export function debounce<F extends AnyFunction, T extends boolean | undefined = false>(
+  fun: F,
+  delay: number,
+  option: DebounceOption<T> = {},
+) {
+  const { leading = true, trailing = false } = option;
   if (!leading && !trailing) {
     throw Error('leading and trailing is all false, the callback will never be called. assign at least one width true');
   }
   let timer = 0;
-  function timeout<T>(context: T, ...args: Parameters<F>) {
+  function timeout<C>(context: C, ...args: Parameters<F>) {
     clearTimeout(timer);
 
     // @ts-expect-error node 版本的 setTimeout 返回值不是数字
@@ -22,7 +31,7 @@ export function debounce<F extends AnyFunction>(fun: F, delay: number, { leading
     }, delay);
   }
 
-  return function proxyFunc<T>(this: T, ...args: Parameters<F>): void {
+  return function proxyFunc<C>(this: C, ...args: Parameters<F>): void {
     if (!timer && leading) {
       fun.call(this, ...args);
 
@@ -36,6 +45,10 @@ export function debounce<F extends AnyFunction>(fun: F, delay: number, { leading
   };
 }
 
+type ThrottleOption<T> = {
+  trailing?: T;
+  leading?: T extends false ? true : boolean;
+};
 /**
  * 节流
  * @param fun
@@ -45,10 +58,18 @@ export function debounce<F extends AnyFunction>(fun: F, delay: number, { leading
  * @param option.trailing - 是否保证执行最后一次 default is true
  * @returns
  */
-export function throttle<F extends AnyFunction>(fun: F, delay: number, { leading = true, trailing = true } = {}) {
+export function throttle<F extends AnyFunction, T extends boolean | undefined = true>(
+  fun: F,
+  delay: number,
+  option: ThrottleOption<T> = {},
+) {
+  const { leading = true, trailing = true } = option;
+  if (!leading && !trailing) {
+    throw Error('leading and trailing is all false, the callback will never be called. assign at least one width true');
+  }
   let latestArgs: unknown[] | undefined;
   let timer = 0;
-  function timeout<T>(context: T, args?: Parameters<F>) {
+  function timeout<C>(context: C, args?: Parameters<F>) {
     if (trailing) {
       latestArgs = args;
     }
@@ -65,11 +86,13 @@ export function throttle<F extends AnyFunction>(fun: F, delay: number, { leading
     }, delay);
   }
 
-  return function proxyFunc<T>(this: T, ...args: Parameters<F>) {
+  return function proxyFunc<C>(this: C, ...args: Parameters<F>): void {
     if (!timer && leading) {
       fun.call(this, ...args);
       timeout(this);
+      return;
     }
+    timeout(this, args);
   };
 }
 
@@ -89,17 +112,24 @@ export function self<T>(ele: T): T {
  * @param option.lastResult - 重复调用是否返回第一次调用的结果 default is true
  * @returns
  */
-export function once<F extends AnyFunction>(fun: F, { lastResult = true } = {}) {
-  type FunctionReturn = ReturnType<F> | undefined;
+export function once<F extends AnyFunction, T extends boolean | undefined = true>(
+  fun: F,
+  option: { lastResult?: T } = {},
+) {
+  const { lastResult = true } = option;
+
+  type FunctionReturn = ReturnType<F> | (T extends false ? undefined : never);
 
   let called = false;
   let result: FunctionReturn;
-  return function proxyFunc<T>(this: T, ...args: Parameters<F>): FunctionReturn {
+  return function proxyFunc<C>(this: C, ...args: Parameters<F>): FunctionReturn {
     if (called) {
-      return lastResult ? result : undefined;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return lastResult ? result : (undefined as FunctionReturn);
     }
     called = true;
     result = fun.call(this, ...args) as FunctionReturn;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return result;
   };
 }
