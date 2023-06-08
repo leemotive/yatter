@@ -139,7 +139,8 @@ export function tryChangeType(input: string) {
 /**
  * 将 search 字符串转有层次结构的对象
  * @param search
- * @param param1
+ * @param option.changeType 是否尝试将参数值回去找成数字及布尔等类型
+ * @param option.merge 是否将同名参数合并成数组
  * @returns
  */
 export function restoreParam(search: string, { changeType = false, merge = false } = {}) {
