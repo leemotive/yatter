@@ -1,4 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import typescript from '@rollup/plugin-typescript';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import dts from 'rollup-plugin-dts';
 import fs from 'fs';
 import path from 'path';

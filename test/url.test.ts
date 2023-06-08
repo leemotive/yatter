@@ -59,7 +59,9 @@ describe('restoreParam', () => {
   test.each([
     ['a=1&b=2', undefined, { a: '1', b: '2' }],
     ['a[0]=1&b=2&a[1]=c', undefined, { a: ['1', 'c'], b: '2' }],
-    ['a[0]=1&b=2&a[1]=c', { changeType: true }, { a: [1, 'c'], b: 2 }],
+    ['a[0]=1&b=2&a[1]=c&b=4', { changeType: true }, { a: [1, 'c'], b: 4 }],
+    ['a[0]=1&b[p]=2&a[1]=c', { changeType: true }, { a: [1, 'c'], b: { p: 2 } }],
+    ['a=1&b[p]=2&a=c', { changeType: true, merge: true }, { a: [1, 'c'], b: { p: 2 } }],
   ])('restoreParam-%#', (input, option, result) => {
     expect(restoreParam(input, option)).toEqual(result);
   });

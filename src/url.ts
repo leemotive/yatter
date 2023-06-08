@@ -142,9 +142,28 @@ export function tryChangeType(input: string) {
  * @param param1
  * @returns
  */
-export function restoreParam(search: string, { changeType = false } = {}) {
+export function restoreParam(search: string, { changeType = false, merge = false } = {}) {
   const param: AnyObject = {};
-  new URLSearchParams(search).forEach((v, k) => {
+  const urlEntries = [...new URLSearchParams(search).entries()];
+  if (merge) {
+    let keys: { [name: string]: number } = {};
+    urlEntries.forEach(([k]) => {
+      keys[k] = (keys[k] || 0) + 1;
+    });
+    keys = Object.fromEntries(Object.entries(keys).flatMap(([k, v]) => (v > 1 ? [[k, 0]] : [])));
+
+    urlEntries.forEach(entry => {
+      const [k] = entry;
+      if (Object.hasOwn(keys, k)) {
+        // eslint-disable-next-line no-param-reassign
+        entry[0] = `${entry[0]}[${keys[k]}]`;
+        keys[k]++;
+      }
+    });
+  }
+
+  urlEntries.forEach(entry => {
+    const [k, v] = entry;
     setDeepValue(param, k, changeType ? tryChangeType(v) : v);
   });
   return param;
