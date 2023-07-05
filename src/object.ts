@@ -14,10 +14,10 @@ type Extension<R> = R & AnyObject;
  * @param matchers
  * @returns
  */
-export function pick<I extends AnyObject>(
+export function pick<I extends AnyObject, R extends AnyObject = Extension<Partial<I>>>(
   input: I,
   matchers: Array<SimpleMatcher<I> | PropsMap>,
-): Extension<Partial<I>> {
+): R {
   type K = keyof I;
   const simpleMathcer: Array<SimpleMatcher> = matchers.map(m => {
     if (Array.isArray(m)) {
@@ -41,7 +41,7 @@ export function pick<I extends AnyObject>(
       Object.assign(res, { [mappedKey]: input[key] });
     }
     return res;
-  }, {});
+  }, {} as R);
 }
 
 /**
