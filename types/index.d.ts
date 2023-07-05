@@ -4,5 +4,6 @@ type OneOrMore<T> = T | T[];
 type AnyFunction<T = any> = (...args: any[]) => T;
 type AnyAsyncFunction = (...args: any[]) => Promise<any>;
 
-type NotArray<T> = T extends unknown[] ? never : T extends object ? T : never;
-type AnyObject<T = unknown> = { [k: string]: T };
+type ObjectKey = string | number | symbol;
+type NotArray<T> = Exclude<T, any[]>; // T extends unknown[] ? never : T extends object ? T : never;
+type AnyObject<T = unknown> = { [k: ObjectKey]: T };

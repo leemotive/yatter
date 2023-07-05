@@ -2,10 +2,12 @@ import { Matcher } from '../src/is';
 import { cut, pick, emptyOf, clone, filter, invert, getDeepValue, setDeepValue } from '../src/object';
 
 describe('pick', () => {
+  const obj = { id: 1, name: 'a' };
   test.each([
-    [{ id: 1, name: 'a' }, ['id', ['name', 'nickname']], { id: 1, nickname: 'a' }],
-    [{ id: 1, name: 'a' }, [/m/, { from: 'id', to: 'no' }], { no: 1, name: 'a' }],
-    [{ id: 1, name: 'a' }, [/m/, { from: /i/, to: (a: string) => a.repeat(2) }], { idid: 1, name: 'a' }],
+    [obj, ['id', ['name', 'nickname']], { id: 1, nickname: 'a' }],
+    [obj, [/m/, { from: 'id', to: 'no' }], { no: 1, name: 'a' }],
+    [obj, [/m/, { from: /i/, to: (a: string) => a.repeat(2) }], { idid: 1, name: 'a' }],
+    [obj, [(k: keyof typeof obj) => obj[k] === 'a'], { name: 'a' }],
   ])('string-%#', (input, matcher, result) => {
     expect(pick(input, matcher)).toEqual(result);
   });

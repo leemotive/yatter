@@ -1,19 +1,24 @@
-import { isEmpty, isMatch, isMatchSome, Matcher } from './is';
+import { isEmpty, isMatch, isMatchSome, Matcher, TestFunction } from './is';
 import { isObject } from './type';
 
-type SimpleMatcher = string | string[] | RegExp;
+type SimpleMatcher<T = any> = string | string[] | RegExp | TestFunction<keyof T>;
 type PropsMap = {
   from: SimpleMatcher;
   to: string | ((o: string) => string);
 };
+type Extension<R> = R & AnyObject;
+
 /**
  * 按定义的规则从对象中获取指定属性及值
  * @param input
  * @param matchers
  * @returns
  */
-export function pick<I extends object, R extends I>(input: NotArray<I>, matchers: Array<SimpleMatcher | PropsMap>): R {
-  type K = keyof typeof input;
+export function pick<I extends AnyObject>(
+  input: I,
+  matchers: Array<SimpleMatcher<I> | PropsMap>,
+): Extension<Partial<I>> {
+  type K = keyof I;
   const simpleMathcer: Array<SimpleMatcher> = matchers.map(m => {
     if (Array.isArray(m)) {
       return m[0];
@@ -21,7 +26,7 @@ export function pick<I extends object, R extends I>(input: NotArray<I>, matchers
     return (m as PropsMap).from || <SimpleMatcher>m;
   });
 
-  return (Object.keys(input) as K[]).reduce((res: R, key: K) => {
+  return (Object.keys(input) as K[]).reduce((res, key: K) => {
     const index: number = simpleMathcer.findIndex(m => isMatch<K, SimpleMatcher>(key, m));
     // eslint-disable-next-line no-bitwise
     if (~index) {
@@ -36,7 +41,7 @@ export function pick<I extends object, R extends I>(input: NotArray<I>, matchers
       Object.assign(res, { [mappedKey]: input[key] });
     }
     return res;
-  }, {} as R);
+  }, {});
 }
 
 /**
@@ -45,9 +50,9 @@ export function pick<I extends object, R extends I>(input: NotArray<I>, matchers
  * @param matchers
  * @returns
  */
-export function cut<I extends object, R extends I, T>(input: NotArray<I>, matchers: Matcher<string, T>[]): R {
-  const entries = Object.entries(input).filter(([key]) => !isMatchSome(key, matchers));
-  return Object.fromEntries(entries) as R;
+export function cut<I extends AnyObject, T, K = keyof I>(input: I, matchers: Matcher<K, T>[]): Partial<I> {
+  const entries = Object.entries(input).filter(([key]) => !isMatchSome<K, T>(key as K, matchers));
+  return Object.fromEntries(entries) as Partial<I>;
 }
 
 type CloneMode = 'deep' | 'shallow' | 'json';
