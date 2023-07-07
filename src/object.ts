@@ -1,7 +1,7 @@
 import { isEmpty, isMatch, isMatchSome, Matcher, TestFunction } from './is';
 import { isObject } from './type';
 
-type SimpleMatcher<T = any> = string | string[] | RegExp | TestFunction<keyof T>;
+type SimpleMatcher<T = any> = keyof T | [keyof T, string] | RegExp | TestFunction<keyof T>;
 type PropsMap = {
   from: SimpleMatcher;
   to: string | ((o: string) => string);
