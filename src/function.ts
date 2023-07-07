@@ -160,6 +160,10 @@ export function retry<F extends AnyAsyncFunction>(fun: F, { max = 3 } = {}) {
   };
 }
 
+type PollOption<F extends AnyFunction> = {
+  delay?: number;
+  next?: (res: Awaited<ReturnType<F>>) => boolean | Promise<boolean>;
+};
 /**
  * 轮询，自动重复执行函数
  * @param fun
@@ -168,7 +172,7 @@ export function retry<F extends AnyAsyncFunction>(fun: F, { max = 3 } = {}) {
  * @param option.next - 是否进入下一次轮询的判断开关，每次将要进行下一次轮询前将通过此方法进行判断是否要继续，默认始终继续
  * @returns
  */
-export function poll<F extends AnyAsyncFunction>(fun: F, { delay = 1000, next = () => true } = {}) {
+export function poll<F extends AnyAsyncFunction>(fun: F, { delay = 1000, next = () => true } = {} as PollOption<F>) {
   let timer = 0;
   return function start<T>(this: T, ...args: Parameters<F>) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -179,10 +183,12 @@ export function poll<F extends AnyAsyncFunction>(fun: F, { delay = 1000, next = 
   };
 
   async function proxyFunc<T>(this: T, ...args: Parameters<F>) {
-    if (!next()) {
+    const result = await fun.call(this, ...args);
+
+    const callNext = await next(result);
+    if (!callNext) {
       return;
     }
-    await fun.call(this, ...args);
     // @ts-expect-error node 版本的 setTimeout 返回值不是数字
     timer = setTimeout(() => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
