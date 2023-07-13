@@ -1,5 +1,4 @@
 import { isObject } from './type';
-import { numberReg } from './reg';
 import { setDeepValue } from './object';
 
 type ParamObject = {
@@ -130,8 +129,9 @@ export function tryChangeType(input: string) {
   if (input === 'undefined') {
     return undefined;
   }
-  if (numberReg.test(input)) {
-    return +input;
+  const num = +input;
+  if (!Number.isNaN(num) && num <= Number.MAX_SAFE_INTEGER && num.toString() === input) {
+    return num;
   }
   return input;
 }
