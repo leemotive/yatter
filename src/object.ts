@@ -370,6 +370,11 @@ export function invert(input: AnyObject, option: { duplicate?: Duplicate } = {})
   return result;
 }
 
+type GetDeepOption<T> = {
+  fallback?: any;
+  mount?: T;
+  create?: T extends true ? true : boolean;
+};
 /**
  * 按 key 的层级结构深层取值
  * @param obj
@@ -378,7 +383,12 @@ export function invert(input: AnyObject, option: { duplicate?: Duplicate } = {})
  * @param option.create - 父级属性不存在时，是否创建父级属性 default is false
  * @returns
  */
-export function getDeepValue<R = unknown>(obj: AnyObject, key: string, { create = false } = {}): R {
+export function getDeepValue<R = unknown, T extends boolean | undefined = false>(
+  obj: AnyObject,
+  key: string,
+  options: GetDeepOption<T> = {},
+): R {
+  const { create = false, fallback, mount = false } = options;
   let result = obj;
   const keys = key.split(/[[\].]+/).filter(Boolean);
   while (keys.length) {
@@ -387,10 +397,18 @@ export function getDeepValue<R = unknown>(obj: AnyObject, key: string, { create 
     }
     const k = keys.shift() as string;
     if (result[k] == null) {
-      if (create && keys.length) {
-        result[k] = /\D/.test(keys[0]) ? {} : [];
+      if (keys.length) {
+        if (create || mount) {
+          result[k] = /\D/.test(keys[0]) ? {} : [];
+        } else {
+          result = fallback;
+          break;
+        }
       } else {
-        result = undefined as any;
+        if (mount) {
+          result[k] = fallback;
+        }
+        result = result[k] || fallback;
         break;
       }
     }
@@ -427,7 +445,7 @@ export function setDeepValue(obj: AnyObject, key: string, value: unknown, { crea
     result = result[k] as AnyObject;
   }
 
-  if (!isObject(result) && !name) {
+  if (!isObject(result) || !name) {
     return false;
   }
   result[name] = value;

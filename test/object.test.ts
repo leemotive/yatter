@@ -103,6 +103,7 @@ describe('getDeepvalue', () => {
   test.each([
     [{ a: [{ b: 1 }] }, 'a[0].b', undefined, 1, { a: [{ b: 1 }] }],
     [{ a: 1 }, 'c.b', undefined, undefined, { a: 1 }],
+    [{ a: 1 }, 'c.b', { create: false, mount: true, fallback: 4 }, 4, { a: 1, c: { b: 4 } }],
     [{ a: 1 }, 'c.b', { create: true }, undefined, { a: 1, c: {} }],
     [{ a: 1 }, 'c[1].b', { create: true }, undefined, { a: 1, c: [undefined, {}] }],
   ])('getDeepvalue-%#', (input, key, option, value, obj) => {
@@ -116,6 +117,8 @@ describe('setDeepvalue', () => {
     [{ a: [{ b: 1 }] }, 'a[0].b', 4, undefined, true, { a: [{ b: 4 }] }],
     [{ a: 1 }, 'c.b', 4, undefined, true, { a: 1, c: { b: 4 } }],
     [{ a: 1 }, 'c.b', 4, { create: false }, false, { a: 1 }],
+    [{ a: 1 }, 'a.b', 4, undefined, false, { a: 1 }],
+    [{ a: 1 }, 'b[0]', 4, undefined, true, { a: 1, b: [4] }],
     [{ a: 1 }, 'c[1].b', 4, { create: true }, true, { a: 1, c: [undefined, { b: 4 }] }],
   ])('setDeepvalue-%#', (input, key, value, option, result, obj) => {
     expect(setDeepValue(input, key, value, option)).toEqual(result);
