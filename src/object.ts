@@ -463,6 +463,6 @@ export function setDeepValue(obj: AnyObject, key: string, value: unknown, option
   if (!isObject(result) || !name) {
     return false;
   }
-  result[name] = value;
+  setter(result, name, value);
   return true;
 }
