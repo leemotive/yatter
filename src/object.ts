@@ -370,10 +370,16 @@ export function invert(input: AnyObject, option: { duplicate?: Duplicate } = {})
   return result;
 }
 
+function defaultSetter(o: AnyObject, k: string, v: unknown) {
+  // eslint-disable-next-line no-param-reassign
+  o[k] = v;
+}
+
 type GetDeepOption<T> = {
   fallback?: any;
   mount?: T;
   create?: T extends true ? true : boolean;
+  setter?: typeof defaultSetter;
 };
 /**
  * 按 key 的层级结构深层取值
@@ -381,6 +387,9 @@ type GetDeepOption<T> = {
  * @param key
  * @param option
  * @param option.create - 父级属性不存在时，是否创建父级属性 default is false
+ * @param option.fallback - 当key 不存在时，使用此值返回
+ * @param option.mount - 如果使用了 fallback 返回，是否需要将值同时绑定到对象上
+ * @param option.setter - 自动创建父级结构时的赋值函数，默认是简单赋值
  * @returns
  */
 export function getDeepValue<R = unknown, T extends boolean | undefined = false>(
@@ -388,7 +397,7 @@ export function getDeepValue<R = unknown, T extends boolean | undefined = false>
   key: string,
   options: GetDeepOption<T> = {},
 ): R {
-  const { create = false, fallback, mount = false } = options;
+  const { create = false, fallback, mount = false, setter = defaultSetter } = options;
   let result = obj;
   const keys = key.split(/[[\].]+/).filter(Boolean);
   while (keys.length) {
@@ -399,14 +408,14 @@ export function getDeepValue<R = unknown, T extends boolean | undefined = false>
     if (result[k] == null) {
       if (keys.length) {
         if (create || mount) {
-          result[k] = /\D/.test(keys[0]) ? {} : [];
+          setter(result, k, /\D/.test(keys[0]) ? {} : []);
         } else {
           result = fallback;
           break;
         }
       } else {
         if (mount) {
-          result[k] = fallback;
+          setter(result, k, fallback);
         }
         result = result[k] || fallback;
         break;
@@ -417,6 +426,10 @@ export function getDeepValue<R = unknown, T extends boolean | undefined = false>
   return result as R;
 }
 
+type SetDeepOption = {
+  create?: boolean;
+  setter?: typeof defaultSetter;
+};
 /**
  * 按 key 层级结构设值
  * @param obj
@@ -424,9 +437,11 @@ export function getDeepValue<R = unknown, T extends boolean | undefined = false>
  * @param value
  * @param option
  * @param option.create - 父级属性不存在时，是否创建父级属性 default is true
+ * @param option.setter - 自动创建父级结构时的赋值函数，默认是简单赋值
  * @returns
  */
-export function setDeepValue(obj: AnyObject, key: string, value: unknown, { create = true } = {}): boolean {
+export function setDeepValue(obj: AnyObject, key: string, value: unknown, option: SetDeepOption = {}): boolean {
+  const { create = true, setter = defaultSetter } = option;
   let result = obj;
   const keys = key.split(/[[\].]+/).filter(Boolean);
   const name = keys.pop() as string;
@@ -437,7 +452,7 @@ export function setDeepValue(obj: AnyObject, key: string, value: unknown, { crea
     const k = keys.shift() as string;
     if (result[k] == null) {
       if (create) {
-        result[k] = /\D/.test(keys[0] || name) ? {} : [];
+        setter(result, k, /\D/.test(keys[0] || name) ? {} : []);
       } else {
         return false;
       }
