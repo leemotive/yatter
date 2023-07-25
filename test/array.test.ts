@@ -1,4 +1,4 @@
-import { cross, groupBy, max, min, parallel, sorter, unique } from '../src/array';
+import { cross, diff, groupBy, intersect, max, min, parallel, sorter, union, unique } from '../src/array';
 
 describe('sorter', () => {
   const arr = [
@@ -128,5 +128,51 @@ describe('cross', () => {
     ],
   ])('cross-%#', (a, b, result) => {
     expect(cross(a, b)).toEqual(result);
+  });
+});
+
+describe('intersect', () => {
+  test.each([
+    [[2, 4, 5], [3, 5, 7], [5]],
+    [[{ id: 34 }, { id: 7 }], [{ id: 7 }], []],
+    [[{ id: 34 }, { id: 7 }], [{ id: 7 }, { id: 1 }], [{ id: 7 }], { key: (a: { id: string }) => a.id }, [{ id: 7 }]],
+  ])('intersect-%#', (...args) => {
+    // @ts-expect-error 类型不管
+    expect(intersect(...args.slice(0, -1))).toEqual(args.at(-1));
+  });
+});
+
+describe('union', () => {
+  test.each([
+    [
+      [2, 4, 5],
+      [3, 5, 7],
+      [2, 4, 5, 3, 7],
+    ],
+    [[{ id: 34 }, { id: 7 }], [{ id: 7 }], [{ id: 34 }, { id: 7 }, { id: 7 }]],
+    [
+      [{ id: 34 }, { id: 7 }],
+      [{ id: 7 }, { id: 2 }],
+      { key: (a: { id: string }) => a.id },
+      [{ id: 34 }, { id: 7 }, { id: 2 }],
+    ],
+  ])('intersect-%#', (...args) => {
+    // @ts-expect-error 类型不管
+    expect(union(...args.slice(0, -1))).toEqual(args.at(-1));
+  });
+});
+
+describe('diff', () => {
+  test.each([
+    [
+      [2, 4, 5],
+      [3, 5, 7],
+      [2, 4],
+    ],
+    [[{ id: 34 }, { id: 7 }], [{ id: 7 }], [{ id: 34 }, { id: 7 }]],
+    [[{ id: 34 }, { id: 7 }], [{ id: 7 }, { id: 2 }], { key: (a: { id: string }) => a.id }, [{ id: 34 }]],
+  ])('intersect-%#', (...args) => {
+    // @ts-expect-error 类型不管
+    expect(diff(...args.slice(0, -1))).toEqual(args.at(-1));
   });
 });

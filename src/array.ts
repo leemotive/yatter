@@ -69,11 +69,6 @@ export function unique<T>(arr: T[], uniqueKey: IndexKey<T> | ((ele: T, index: nu
   return result;
 }
 
-type UnionTuple<T extends unknown[][]> = T extends [infer F, ...infer O extends unknown[][]]
-  ? F extends (infer I)[]
-    ? [I, ...UnionTuple<O>]
-    : T
-  : T;
 /**
  * 多个数组按照顺序合并，形成二维数组
  * @param args
@@ -83,7 +78,6 @@ type UnionTuple<T extends unknown[][]> = T extends [infer F, ...infer O extends 
  * ```ts
  * parallel([1, 0], [true, false]) // [[1, true], [0, false]]
  * ```
- *
  */
 export function parallel<T extends unknown[][]>(...args: T): UnionTuple<T>[] {
   const len = Math.max(...args.map(arg => arg.length));
@@ -192,4 +186,74 @@ export function cross<R, T>(a: R[], b: T[]): Array<R | T> {
     result.push(...b.slice(len));
   }
   return result;
+}
+
+type CollConfig = { key: AnyFunction };
+type CollAgrs<T> = [T[], ...T[][], CollConfig] | T[][];
+function isCollConfig(param: any): param is CollConfig {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return typeof param?.key === 'function';
+}
+/**
+ * 计算数组的交集，可以传多个数组，最后一个参数可以是包括 key 方法的对象，key 方法用来唯一标识一个元素
+ *
+ * @example
+ * ```js
+ * intersect([{id: 34}], [{id: 34}])  // []
+ * intersect([{id: 34}], [{id: 34}], {key: a => a.id})  // [{id: 34}]
+ * ```
+ *
+ * @returns
+ */
+export function intersect<T>(...args: CollAgrs<T>): T[] {
+  let getkey: AnyFunction = self;
+  const config = args.at(-1);
+  if (isCollConfig(config)) {
+    args.pop();
+    if (config?.key) {
+      getkey = config.key;
+    }
+  }
+
+  const keys = (args as T[][]).slice(1).map(t => new Set(t.map(getkey)));
+  return args[0].filter(t => keys.every(s => s.has(getkey(t))));
+}
+
+/**
+ * 计算并集，参数和 intersect 参数一样
+ * @returns
+ */
+export function union<T>(...args: CollAgrs<T>): T[] {
+  let getkey: AnyFunction = self;
+  const config = args.at(-1);
+  if (isCollConfig(config)) {
+    args.pop();
+    if (config?.key) {
+      getkey = config.key;
+    }
+  }
+
+  const map = new Map<any, T>();
+  (args as T[][]).flat().forEach(t => {
+    map.set(getkey(t), t);
+  });
+  return [...map.values()];
+}
+
+/**
+ * 计算差集，参数和 intersect 参数一样
+ * @returns
+ */
+export function diff<T>(...args: CollAgrs<T>): T[] {
+  let getkey: AnyFunction = self;
+  const config = args.at(-1);
+  if (isCollConfig(config)) {
+    args.pop();
+    if (config?.key) {
+      getkey = config.key;
+    }
+  }
+
+  const set = new Set(args.slice(1).flat().map(getkey));
+  return args[0].filter(t => !set.has(getkey(t)));
 }
