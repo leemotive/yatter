@@ -55,3 +55,16 @@ export function joinUnit(value: number, unit: string): string {
   }
   return `${value}${unit}`.replace(/^0*/, '');
 }
+
+/**
+ * 比较两个字符串是否相同，不考虑大小写情况
+ * @param o 第一个比较字符串
+ * @param c 第二个比较字符串
+ * @returns 是否相等
+ */
+export function equalsIgnoreCase(o?: string, c?: string): boolean {
+  if (o === c) {
+    return true;
+  }
+  return o?.toLowerCase() === c?.toLowerCase();
+}
