@@ -80,7 +80,7 @@ export function trimZero(n: string) {
 }
 
 export type CompareOption = {
-  interval: '[]' | '()' | '[)' | '(]';
+  boundary: '[]' | '()' | '[)' | '(]';
 };
 /**
  * 判断数字是否在两个数字中间
@@ -88,11 +88,11 @@ export type CompareOption = {
  * @param min
  * @param max
  * @param option
- * @param option.interval - 数学开闭区间的方式限定是否包含左右边界 default is ()
+ * @param option.boundary - 数学开闭区间的方式限定是否包含左右边界 default is ()
  * @returns
  */
-export function isBetween(target: number, min: number, max: number, option: CompareOption = { interval: '()' }) {
-  const [left, right] = option.interval;
+export function isBetween(target: number, min: number, max: number, option: CompareOption = { boundary: '()' }) {
+  const [left, right] = option.boundary;
   if (target < min) {
     return false;
   }

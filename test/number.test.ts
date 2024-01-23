@@ -63,11 +63,11 @@ describe('trimZero', () => {
 describe('isBetween', () => {
   test.each([
     [2, 1, 3, undefined, true],
-    [2, 2, 2, { interval: '[]' } as CompareOption, true],
-    [2, 2, 3, { interval: '[)' } as CompareOption, true],
-    [2, 1, 2, { interval: '(]' } as CompareOption, true],
+    [2, 2, 2, { boundary: '[]' } as CompareOption, true],
+    [2, 2, 3, { boundary: '[)' } as CompareOption, true],
+    [2, 1, 2, { boundary: '(]' } as CompareOption, true],
     [2, 1, 2, undefined, false],
-    [2, 2, 3, { interval: '(]' } as CompareOption, false],
+    [2, 2, 3, { boundary: '(]' } as CompareOption, false],
   ])('isBetween-%#', (input, min, max, option, result) => {
     expect(isBetween(input, min, max, option)).toBe(result);
   });
