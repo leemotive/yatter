@@ -64,3 +64,6 @@ rules:
   no-use-before-define:
     - error
     - functions: false
+  no-void:
+    - error
+    - allowAsStatement: true
