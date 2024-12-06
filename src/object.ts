@@ -466,3 +466,12 @@ export function setDeepValue(obj: AnyObject, key: string, value: unknown, option
   setter(result, name, value);
   return true;
 }
+
+/**
+ * 清空对象
+ * @param obj
+ */
+export function clear(obj: AnyObject): void {
+  Object.getOwnPropertyNames(obj).forEach(name => Reflect.deleteProperty(obj, name));
+  Object.getOwnPropertySymbols(obj).forEach(sym => Reflect.deleteProperty(obj, sym));
+}
