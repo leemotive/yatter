@@ -114,9 +114,7 @@ export function clone<C>(origin: C, mode: CloneMode = 'deep'): C {
     }
 
     const toValue = toObj[key];
-    // @ts-expect-error 可能存在 clone 方法
     if (typeof fromValue.clone === 'function') {
-      // @ts-expect-error 可能存在 clone 方法
       toObj[key] = fromValue.clone();
     } else if (fromValue && isObject(fromValue)) {
       keyStack.push(toObj, fromObj, split, ...Object.keys(fromValue).reverse(), toValue, fromValue, split);

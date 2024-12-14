@@ -4,7 +4,7 @@ import { toPascalCase } from './case';
  * @param input
  * @returns
  */
-export function isFunction(input: unknown) {
+export function isFunction(input: unknown): input is AnyFunction {
   return typeof input === 'function';
 }
 
@@ -13,7 +13,7 @@ export function isFunction(input: unknown) {
  * @param input
  * @returns
  */
-export function isAsyncFunction(input: unknown) {
+export function isAsyncFunction(input: unknown): input is AnyAsyncFunction {
   return isFunction(input) && input?.constructor?.name === 'AsyncFunction';
 }
 
@@ -22,7 +22,7 @@ export function isAsyncFunction(input: unknown) {
  * @param input
  * @returns
  */
-export function isNullOrUndef(input: unknown) {
+export function isNullOrUndef(input: unknown): input is null | undefined {
   return input === null || input === undefined;
 }
 
@@ -31,7 +31,7 @@ export function isNullOrUndef(input: unknown) {
  * @param input
  * @returns
  */
-export function isSymbol(input: unknown) {
+export function isSymbol(input: unknown): input is symbol {
   return typeof input === 'symbol';
 }
 
@@ -40,7 +40,7 @@ export function isSymbol(input: unknown) {
  * @param input
  * @returns
  */
-export function isString(input: unknown) {
+export function isString(input: unknown): input is string {
   return typeof input === 'string';
 }
 
@@ -49,7 +49,7 @@ export function isString(input: unknown) {
  * @param input
  * @returns
  */
-export function isNumber(input: unknown) {
+export function isNumber(input: unknown): input is number {
   return typeof input === 'number';
 }
 
@@ -58,7 +58,7 @@ export function isNumber(input: unknown) {
  * @param input
  * @returns
  */
-export function isRegExp(input: unknown) {
+export function isRegExp(input: unknown): input is RegExp {
   return input instanceof RegExp;
 }
 
@@ -67,7 +67,7 @@ export function isRegExp(input: unknown) {
  * @param input
  * @returns
  */
-export function isBoolean(input: unknown) {
+export function isBoolean(input: unknown): input is boolean {
   return input === true || input === false;
 }
 
@@ -76,7 +76,7 @@ export function isBoolean(input: unknown) {
  * @param input
  * @returns
  */
-export function isObject(input: unknown) {
+export function isObject(input: unknown): input is AnyObject {
   return !!input && typeof input === 'object';
 }
 
@@ -85,7 +85,7 @@ export function isObject(input: unknown) {
  * @param input
  * @returns
  */
-export function isPlainObject(input: unknown) {
+export function isPlainObject(input: unknown): input is AnyObject {
   if (!isObject(input)) {
     return false;
   }
