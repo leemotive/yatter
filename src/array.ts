@@ -5,6 +5,7 @@
  */
 
 import { self } from './function';
+import { isNullOrUndef } from './type';
 
 type GroupByReturn<T> = Record<string, T[]>;
 type IndexKey<T> = Exclude<keyof T, keyof { [K in keyof T as T[K] extends string | number ? never : K]: false }>;
@@ -256,4 +257,19 @@ export function diff<T>(...args: CollAgrs<T>): T[] {
 
   const set = new Set(args.slice(1).flat().map(getkey));
   return args[0].filter(t => !set.has(getkey(t)));
+}
+
+/**
+ * 尝试将第一个参数转化为数组，如果已经是数组了，直接返回
+ * @param input 需要尝试包装数组的参数
+ * @returns
+ */
+export function ensureArray<T>(input?: OneOrMore<T>): T[] {
+  if (isNullOrUndef(input)) {
+    return [];
+  }
+  if (Array.isArray(input)) {
+    return input;
+  }
+  return [input];
 }
