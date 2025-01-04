@@ -1,5 +1,5 @@
 import { isEmpty, isMatch, isMatchSome, Matcher, TestFunction } from './is';
-import { isObject } from './type';
+import { isDate, isObject, isRegExp } from './type';
 
 type SimpleMatcher<T = any> = keyof T | [keyof T, string] | RegExp | TestFunction<keyof T>;
 type PropsMap = {
@@ -116,7 +116,11 @@ export function clone<C>(origin: C, mode: CloneMode = 'deep'): C {
     const toValue = toObj[key];
     if (typeof fromValue.clone === 'function') {
       toObj[key] = fromValue.clone();
-    } else if (fromValue && isObject(fromValue)) {
+    } else if (isDate(fromValue)) {
+      toObj[key] = new Date(fromValue.getTime()) as any;
+    } else if (isRegExp(fromValue)) {
+      toObj[key] = new RegExp(fromValue.source, fromValue.flags) as any;
+    } else if (isObject(fromValue)) {
       keyStack.push(toObj, fromObj, split, ...Object.keys(fromValue).reverse(), toValue, fromValue, split);
     }
 

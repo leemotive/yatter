@@ -81,6 +81,15 @@ export function isObject(input: unknown): input is AnyObject {
 }
 
 /**
+ * 是否是日期类型
+ * @param input
+ * @returns
+ */
+export function isDate(input: unknown): input is Date {
+  return input instanceof Date;
+}
+
+/**
  * 是否是简单对象
  * @param input
  * @returns
