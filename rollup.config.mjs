@@ -41,7 +41,7 @@ export default [
         file: './dist/yatter.js',
         format: 'umd',
         exports: 'named',
-        name: 'Yatter',
+        name: 'yatter',
       },
     ],
     plugins: [typescript({ exclude: ['test'], compilerOptions: { target: 'es6' } })],
