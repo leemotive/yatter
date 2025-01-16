@@ -1,15 +1,15 @@
 import {
+  type CompareOption,
+  avg,
+  toString as convertString,
+  divide,
+  isBetween,
   shiftLeft,
   shiftRight,
-  toString,
-  toFixed,
-  trimZero,
-  isBetween,
-  CompareOption,
   sum,
-  avg,
+  toFixed,
   toThousand,
-  divide,
+  trimZero,
 } from '../src/number';
 
 describe('shiftLeft', () => {
@@ -38,7 +38,7 @@ describe('toString', () => {
     [-2.34, '-2.34'],
     [-0.0000005, '-0.0000005'],
   ])('toString-%#', (input, result) => {
-    expect(toString(input)).toBe(result);
+    expect(convertString(input)).toBe(result);
   });
 });
 
@@ -97,7 +97,7 @@ describe('toThousand', () => {
   test.each([
     [23412563.26, undefined, '23,412,563.26'],
     ['0023412563.26', undefined, '0,023,412,563.26'],
-    ['0023412563.26', { native: { style: 'currency', currency: 'CNY' } }, 'CN¥23,412,563.26'],
+    ['0023412563.26', { native: { style: 'currency' as const, currency: 'CNY' } }, 'CN¥23,412,563.26'],
     ['-0023412563.26', { trim: true }, '-23,412,563.26'],
     [-3412563.26, undefined, '-3,412,563.26'],
   ])('toThousand-%#', (input, option, result) => {

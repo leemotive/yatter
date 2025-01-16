@@ -2,7 +2,7 @@
   "ts-node": {
     "transpileOnly": true,
     "compilerOptions": {
-      "module": "CommonJS",
+      "module": "CommonJS"
     }
   },
   "compilerOptions": {
@@ -16,10 +16,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "declaration": false,
+    "declaration": false
   },
   "include": ["src/*.ts", "test/*.ts", "typings/*.d.ts", "types/index.d.ts"],
   "exclude": ["node_modules", "dist", "es", "lib", "coverage"]

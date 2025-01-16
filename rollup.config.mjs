@@ -2,9 +2,9 @@
 import typescript from '@rollup/plugin-typescript';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dts from 'rollup-plugin-dts';
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
 
 const srcDir = path.resolve(process.cwd(), 'src');
 const files = fs.readdirSync(srcDir);

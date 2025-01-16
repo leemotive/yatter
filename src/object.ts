@@ -1,4 +1,4 @@
-import { isEmpty, isMatch, isMatchSome, Matcher, TestFunction } from './is';
+import { type Matcher, type TestFunction, isEmpty, isMatch, isMatchSome } from './is';
 import { isDate, isObject, isRegExp } from './type';
 
 type SimpleMatcher<T = any> = keyof T | [keyof T, string] | RegExp | TestFunction<keyof T>;
@@ -151,7 +151,12 @@ export function filter<T extends AnyObject>(
 
     if (current === split) {
       const eles = arr.pop() as any[];
-      const idx: number[] = eles.reduce((indexs, item, index) => (isEmpty(item) ? [index, ...indexs] : indexs), []);
+      const idx: number[] = eles.reduce((indexs, item, index) => {
+        if (isEmpty(item)) {
+          indexs.unshift(index);
+        }
+        return indexs;
+      }, []);
       idx.forEach(index => eles.splice(index, 1));
       // eslint-disable-next-line
       continue;
@@ -186,7 +191,7 @@ export function filter<T extends AnyObject>(
 }
 
 type Parents<N> = N[];
-type TraverseCallback<N> = (node: N, option: { parents: Parents<N> }) => boolean | void;
+type TraverseCallback<N> = (node: N, option: { parents: Parents<N> }) => boolean | undefined;
 /**
  * 广度优先遍历
  * @param tree
@@ -356,19 +361,22 @@ export function invert(input: AnyObject, option: { duplicate?: Duplicate } = {})
   if (duplicate === 'overwrite') {
     return Object.fromEntries(entries) as AnyObject<OneOrMore<string>>;
   }
-  const result = (entries as Array<[string, string]>).reduce((acc, [k, v]) => {
-    if (Object.hasOwn(acc, k)) {
-      const o = acc[k];
-      if (Array.isArray(o)) {
-        o.push(v);
+  const result = (entries as Array<[string, string]>).reduce(
+    (acc, [k, v]) => {
+      if (Object.hasOwn(acc, k)) {
+        const o = acc[k];
+        if (Array.isArray(o)) {
+          o.push(v);
+        } else {
+          acc[k] = [o, v];
+        }
       } else {
-        acc[k] = [o, v];
+        acc[k] = v;
       }
-    } else {
-      acc[k] = v;
-    }
-    return acc;
-  }, {} as AnyObject<OneOrMore<string>>);
+      return acc;
+    },
+    {} as AnyObject<OneOrMore<string>>,
+  );
   return result;
 }
 

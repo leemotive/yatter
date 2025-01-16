@@ -3,6 +3,8 @@
  * @param n
  * @returns
  */
+
+// biome-ignore lint/suspicious/noShadowRestrictedNames: 忽略toString，全局toString没什么用
 export function toString(n: number) {
   const str = `${n}`;
   if (str.includes('e')) {

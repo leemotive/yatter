@@ -24,7 +24,6 @@ export function debounce<F extends AnyFunction, T extends boolean | undefined = 
   function timeout<C>(context: C, ...args: Parameters<F>) {
     clearTimeout(timer);
 
-    // @ts-expect-error node 版本的 setTimeout 返回值不是数字
     timer = setTimeout(() => {
       timer = 0;
       trailing && fun.call(context, ...args);
@@ -35,7 +34,6 @@ export function debounce<F extends AnyFunction, T extends boolean | undefined = 
     if (!timer && leading) {
       fun.call(this, ...args);
 
-      // @ts-expect-error node版本的 setTimeout 返回值不是数字
       timer = setTimeout(() => {
         timer = 0;
       }, delay);
@@ -76,7 +74,6 @@ export function throttle<F extends AnyFunction, T extends boolean | undefined = 
     if (timer) {
       return;
     }
-    // @ts-expect-error node 版本的 setTimeout 返回值不是数字
     timer = setTimeout(function callback() {
       timer = 0;
       if (latestArgs) {
@@ -143,14 +140,14 @@ export function once<F extends AnyFunction, T extends boolean | undefined = true
 export function retry<F extends AnyFunction>(fun: F, { max = 3 } = {}) {
   type FReturn = Awaited<ReturnType<F>>;
   return async function proxyFunc<T>(this: T, ...args: Parameters<F>): Promise<FReturn> {
-    let err;
+    let err: unknown;
     let times = 0;
     while (times < max) {
       try {
         // eslint-disable-next-line no-await-in-loop
         const result = await fun.call(this, ...args);
         return result as FReturn;
-      } catch (e) {
+      } catch (e: unknown) {
         err = e;
         times++;
       }
@@ -198,7 +195,6 @@ export function poll<F extends AnyFunction>(
         return;
       }
     }
-    // @ts-expect-error node 版本的 setTimeout 返回值不是数字
     timer = setTimeout(() => {
       void proxyFunc.call(this, ...args);
     }, delay);
