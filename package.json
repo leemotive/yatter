@@ -1,6 +1,6 @@
 {
   "name": "yatter",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "tool collection",
   "main": "lib/index.js",
   "module": "es/index.mjs",
@@ -9,7 +9,7 @@
   "typings": "./typings/index.d.ts",
   "scripts": {
     "test": "npx jest",
-    "build": "rm -rf dist es lib && rollup -c",
+    "build": "rm -rf dist es lib typings && rollup -c",
     "postbuild": "node scripts/mergeTypes.mjs & uglifyjs dist/yatter.js -o dist/yatter.min.js",
     "prepare": "husky",
     "docs": "npx typedoc src/*.ts"
@@ -39,10 +39,5 @@
     "typescript": "^5.7.3",
     "uglify-js": "^3.19.3"
   },
-  "files": [
-    "dist",
-    "es",
-    "lib",
-    "typings"
-  ]
+  "files": ["dist", "es", "lib", "typings"]
 }
