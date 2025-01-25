@@ -1,4 +1,4 @@
-import { debounce, throttle, once, retry } from '../src/function';
+import { debounce, isNot, limitArgs, once, retry, throttle } from '../src/function';
 
 jest.useFakeTimers();
 
@@ -7,17 +7,17 @@ describe('debounce', () => {
     const fn = jest.fn();
     const debounced = debounce(fn, 1000, { leading: true, trailing: true });
     debounced(12);
-    expect(fn).toBeCalledTimes(1);
-    expect(fn).toBeCalledWith(12);
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(12);
     jest.advanceTimersByTime(500);
     debounced(13);
     debounced(14);
     jest.advanceTimersByTime(501);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     jest.advanceTimersByTime(500);
-    expect(fn).toBeCalledTimes(2);
-    expect(fn).not.toBeCalledWith(13);
-    expect(fn).toBeCalledWith(14);
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).not.toHaveBeenCalledWith(13);
+    expect(fn).toHaveBeenCalledWith(14);
     jest.clearAllTimers();
   });
   test('leading: false, trailing: true', () => {
@@ -27,8 +27,8 @@ describe('debounce', () => {
     debounced(14);
     expect(fn).not.toBeCalled();
     jest.advanceTimersByTime(1001);
-    expect(fn).toBeCalledTimes(1);
-    expect(fn).toBeCalledWith(14);
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(14);
     jest.clearAllTimers();
   });
 
@@ -39,7 +39,7 @@ describe('debounce', () => {
     expect(fn).not.toBeCalled();
     jest.advanceTimersByTime(1001);
     expect(fn).toBeCalled();
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     jest.clearAllTimers();
   });
 
@@ -55,14 +55,14 @@ describe('throttle', () => {
     const fn = jest.fn();
     const throttled = throttle(fn, 1000, { leading: true, trailing: true });
     throttled(12);
-    expect(fn).toBeCalledWith(12);
+    expect(fn).toHaveBeenCalledWith(12);
     jest.advanceTimersByTime(500);
     throttled(13);
     throttled(14);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     jest.advanceTimersByTime(501);
-    expect(fn).toBeCalledTimes(2);
-    expect(fn).lastCalledWith(14);
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveBeenLastCalledWith(14);
     jest.clearAllTimers();
   });
 
@@ -70,19 +70,19 @@ describe('throttle', () => {
     const fn = jest.fn();
     const throttled = throttle(fn, 1000, { leading: true, trailing: false });
     throttled(12);
-    expect(fn).toBeCalledWith(12);
+    expect(fn).toHaveBeenCalledWith(12);
     jest.advanceTimersByTime(500);
     throttled(13);
     throttled(14);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     jest.advanceTimersByTime(501);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     throttled(15);
     throttled(16);
-    expect(fn).toBeCalledTimes(2);
-    expect(fn).toBeCalledWith(15);
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveBeenCalledWith(15);
     jest.advanceTimersByTime(2000);
-    expect(fn).not.toBeCalledWith(16);
+    expect(fn).not.toHaveBeenCalledWith(16);
     jest.clearAllTimers();
   });
 
@@ -94,14 +94,14 @@ describe('throttle', () => {
     jest.advanceTimersByTime(500);
     throttled(13);
     throttled(14);
-    expect(fn).not.toBeCalled();
+    expect(fn).not.toHaveBeenCalled();
     jest.advanceTimersByTime(501);
-    expect(fn).lastCalledWith(14);
+    expect(fn).toHaveBeenLastCalledWith(14);
     throttled(15);
     throttled(16);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     jest.advanceTimersByTime(1001);
-    expect(fn).lastCalledWith(16);
+    expect(fn).toHaveBeenLastCalledWith(16);
     jest.clearAllTimers();
   });
 
@@ -118,11 +118,11 @@ describe('once', () => {
     const onceFn = once(fn, { lastResult: false });
 
     let f = onceFn(12);
-    expect(fn).toBeCalledTimes(1);
-    expect(fn).toBeCalledWith(12);
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(12);
     expect(f).toBe(2);
     f = onceFn(13);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     expect(f).toBeUndefined();
     jest.clearAllTimers();
   });
@@ -132,11 +132,11 @@ describe('once', () => {
     const onceFn = once(fn);
 
     let f = onceFn(12);
-    expect(fn).toBeCalledTimes(1);
-    expect(fn).toBeCalledWith(12);
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(12);
     expect(f).toBe(2);
     f = onceFn(13);
-    expect(fn).toBeCalledTimes(1);
+    expect(fn).toHaveBeenCalledTimes(1);
     expect(f).toBe(2);
     jest.clearAllTimers();
   });
@@ -149,7 +149,7 @@ describe('retry', () => {
       throw Error('exceeded');
     });
     await expect(retry(fn)).rejects.toThrowError('exceeded');
-    expect(fn).toBeCalledTimes(3);
+    expect(fn).toHaveBeenCalledTimes(3);
     jest.clearAllTimers();
   });
 
@@ -164,8 +164,27 @@ describe('retry', () => {
       return times;
     });
     const result = await retry(fn)();
-    expect(fn).toBeCalledTimes(2);
+    expect(fn).toHaveBeenCalledTimes(2);
     expect(result).toBe(2);
     jest.clearAllTimers();
+  });
+});
+
+describe('isNot', () => {
+  test('not', () => {
+    function callback(a: number) {
+      return a > 2;
+    }
+    expect(isNot(callback)(1)).toBe(true);
+    expect(isNot(callback)(3)).toBe(false);
+  });
+});
+
+describe('limitArgs', () => {
+  test('limitArgs', () => {
+    function callback(a: number, b = 6) {
+      return a + b;
+    }
+    expect(limitArgs(callback)(1, 8)).toBe(7);
   });
 });

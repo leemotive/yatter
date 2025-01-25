@@ -287,3 +287,26 @@ export function createRace() {
       return fn.call(this, ...args);
     };
 }
+
+/**
+ * 返回一个函数，该函数会返回参数test的结果的取反
+ * @param test 一个返回布尔值的函数
+ * @returns
+ */
+export function isNot<T extends AnyFunction<boolean>>(test: T) {
+  return function not(...args: Parameters<T>) {
+    return !test(...args);
+  };
+}
+
+/**
+ * 限制一个函数的参数数量
+ * @param fun 真实调用的函数
+ * @param max 最多传递的参数数量
+ * @returns
+ */
+export function limitArgs<T extends AnyFunction>(fun: T, max = 1) {
+  return function limit(this: unknown, ...args: Parameters<T>) {
+    return fun.call(this, ...args.slice(0, max));
+  };
+}
