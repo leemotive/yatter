@@ -176,9 +176,12 @@ export function poll<F extends AnyFunction>(
   { delay = 1000, next = () => true, breakOnException = false } = {} as PollOption<F>,
 ) {
   let timer = 0;
+  let stopped = false;
   return function start<T>(this: T, ...args: Parameters<F>) {
+    stopped = false;
     void proxyFunc.call(this, ...args);
     return function stop() {
+      stopped = true;
       clearTimeout(timer);
     };
   };
@@ -187,7 +190,7 @@ export function poll<F extends AnyFunction>(
     try {
       const result = await fun.call(this, ...args);
       const callNext = await next(result);
-      if (!callNext) {
+      if (!callNext || stopped) {
         return;
       }
     } catch {
