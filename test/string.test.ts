@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { equalsIgnoreCase, escapeEntity, joinUnit, uid, unescapeEntity } from '../src/string';
 
 describe('escapeEntity', () => {

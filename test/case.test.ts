@@ -1,13 +1,14 @@
+import { describe, expect, test } from 'vitest';
 import {
+  type CapitalBelongEnum,
+  toCamelCase,
+  toConstantCase,
+  toKebabCase,
   toNoneCase,
   toPascalCase,
-  toCamelCase,
-  toSnakeCase,
-  toKebabCase,
-  toConstantCase,
   toPathCase,
   toSentenseCase,
-  CapitalBelongEnum,
+  toSnakeCase,
 } from '../src/case';
 
 describe('toPascalCase', () => {

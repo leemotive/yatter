@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { cross, diff, groupBy, intersect, max, min, parallel, sorter, union, unique } from '../src/array';
 
 describe('sorter', () => {

@@ -1,5 +1,6 @@
-import { Matcher } from '../src/is';
-import { cut, pick, emptyOf, clone, filter, invert, getDeepValue, setDeepValue } from '../src/object';
+import { describe, expect, test } from 'vitest';
+import type { Matcher } from '../src/is';
+import { clone, cut, emptyOf, filter, getDeepValue, invert, pick, setDeepValue } from '../src/object';
 
 describe('pick', () => {
   const obj = { id: 1, name: 'a' };

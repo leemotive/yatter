@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 // eslint-disable-next-line max-classes-per-file
 import { isAsyncFunction, isBuiltInFunction, isFunction, isPlainObject, isSameType, isType } from '../src/type';
 

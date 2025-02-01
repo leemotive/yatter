@@ -12,11 +12,11 @@
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
-    "sourceMap": false,
+    "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "declaration": false

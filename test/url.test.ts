@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { appendParam, getParam, normalizeParam, param2Search, restoreParam, search2Param } from '../src/url';
 
 describe('appendParam', () => {

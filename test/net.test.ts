@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { ipFromInt, ipToInt } from '../src/net';
 
 describe('ipTransform', () => {
