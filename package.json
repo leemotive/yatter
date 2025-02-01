@@ -8,7 +8,7 @@
   "browser": "dist/yatter.min.js",
   "typings": "./typings/index.d.ts",
   "scripts": {
-    "test": "npx vi",
+    "test": "npx vitest run",
     "build": "rm -rf dist es lib typings && rollup -c",
     "postbuild": "node scripts/mergeTypes.mjs & uglifyjs dist/yatter.js -o dist/yatter.min.js",
     "prepare": "husky",
