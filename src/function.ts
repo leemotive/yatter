@@ -20,12 +20,12 @@ export function debounce<F extends AnyFunction, T extends boolean | undefined = 
   if (!leading && !trailing) {
     throw Error('leading and trailing is all false, the callback will never be called. assign at least one width true');
   }
-  let timer = 0;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   function timeout<C>(context: C, ...args: Parameters<F>) {
     clearTimeout(timer);
 
     timer = setTimeout(() => {
-      timer = 0;
+      timer = undefined;
       trailing && fun.call(context, ...args);
     }, delay);
   }
@@ -35,7 +35,7 @@ export function debounce<F extends AnyFunction, T extends boolean | undefined = 
       fun.call(this, ...args);
 
       timer = setTimeout(() => {
-        timer = 0;
+        timer = undefined;
       }, delay);
       return;
     }
@@ -66,7 +66,7 @@ export function throttle<F extends AnyFunction, T extends boolean | undefined = 
     throw Error('leading and trailing is all false, the callback will never be called. assign at least one width true');
   }
   let latestArgs: unknown[] | undefined;
-  let timer = 0;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   function timeout<C>(context: C, args?: Parameters<F>) {
     if (trailing) {
       latestArgs = args;
@@ -75,7 +75,7 @@ export function throttle<F extends AnyFunction, T extends boolean | undefined = 
       return;
     }
     timer = setTimeout(function callback() {
-      timer = 0;
+      timer = undefined;
       if (latestArgs) {
         fun.call(context, ...latestArgs);
         timeout(context);
@@ -175,7 +175,7 @@ export function poll<F extends AnyFunction>(
   fun: F,
   { delay = 1000, next = () => true, breakOnException = false } = {} as PollOption<F>,
 ) {
-  let timer = 0;
+  let timer: ReturnType<typeof setTimeout>;
   let stopped = false;
   return function start<T>(this: T, ...args: Parameters<F>) {
     stopped = false;

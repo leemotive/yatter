@@ -1,26 +1,16 @@
 {
-  "ts-node": {
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  },
   "compilerOptions": {
     "target": "ESNext",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "strict": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "declaration": false
+    "isolatedModules": true,
+    "useDefineForClassFields": true
   },
-  "include": ["src/*.ts", "test/*.ts", "typings/*.d.ts", "types/index.d.ts"],
-  "exclude": ["node_modules", "dist", "es", "lib", "coverage"]
+  "include": ["src/*.ts", "types/*.d.ts", "test/*.ts"]
 }
