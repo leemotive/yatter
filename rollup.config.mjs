@@ -3,6 +3,7 @@ import dts from 'rollup-plugin-dts';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { defineConfig } from 'rollup';
 
 const srcDir = path.resolve(process.cwd(), 'src');
 const files = fs.readdirSync(srcDir);
@@ -14,20 +15,20 @@ fs.writeFileSync(
   'utf8',
 );
 
-const inputs = sourceFiles.concat('index.ts').map(f => path.resolve('./src', f));
-
-export default [
+export default defineConfig([
   {
-    input: inputs,
+    input: 'src/index.ts',
     output: [
       {
         dir: './es',
         format: 'es',
         entryFileNames: '[name].mjs',
+        preserveModules: true,
       },
       {
         dir: './lib',
         format: 'cjs',
+        preserveModules: true,
       },
     ],
     plugins: [typescript({ exclude: ['test'] })],
@@ -52,4 +53,4 @@ export default [
     },
     plugins: [dts()],
   },
-];
+]);
