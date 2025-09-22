@@ -9,6 +9,7 @@ import {
   toPathCase,
   toSentenseCase,
   toSnakeCase,
+  toTitleCase,
 } from '../src/case';
 
 describe('toPascalCase', () => {
@@ -188,5 +189,18 @@ describe('toNoneCase', () => {
     ['minifyURLs', 'minify ur ls', { capitalBelong: 'right' as CapitalBelongEnum }],
   ])('toNoneCaseWithOption-%#', (input, result, option?) => {
     expect(toNoneCase(input, option)).toBe(result);
+  });
+});
+
+describe('toTitleCase', () => {
+  test.each([
+    ['', ''],
+    ['test', 'Test'],
+    ['test string', 'Test String'],
+    ['Test String', 'Test String'],
+    ['TestV2', 'Test V2'],
+    ['version 1.2.10', 'Version 1 2 10'],
+  ])('toTitleCase-%#', (input, result) => {
+    expect(toTitleCase(input)).toBe(result);
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "yatter",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "tool collection",
   "main": "lib/index.js",
   "module": "es/index.mjs",
@@ -37,10 +37,5 @@
     "uglify-js": "^3.19.3",
     "vitest": "^3.0.4"
   },
-  "files": [
-    "dist",
-    "es",
-    "lib",
-    "typings"
-  ]
+  "files": ["dist", "es", "lib", "typings"]
 }

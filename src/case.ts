@@ -39,28 +39,26 @@ function parseChunks<T extends CaseOption>(input: string, option: T = {} as T): 
   const resultInChunk = wordReg
     .reduce(
       (chunks, reg) =>
-        chunks
-          .map(chunk => {
-            if (typeof chunk !== 'string') {
-              return [chunk];
+        chunks.flatMap(chunk => {
+          if (typeof chunk !== 'string') {
+            return [chunk];
+          }
+          const matches = [...chunk.matchAll(reg)];
+          const words: ChunkArray = [];
+          let endIndex = 0;
+          matches.forEach(({ index: startIndex, 0: word }) => {
+            if (endIndex < (startIndex as number)) {
+              words.push(chunk.slice(endIndex, startIndex));
             }
-            const matches = [...chunk.matchAll(reg)];
-            const words: ChunkArray = [];
-            let endIndex = 0;
-            matches.forEach(({ index: startIndex, 0: word }) => {
-              if (endIndex < (startIndex as number)) {
-                words.push(chunk.slice(endIndex, startIndex));
-              }
-              words.push({ word });
+            words.push({ word });
 
-              endIndex = <number>startIndex + word.length;
-            });
-            if (endIndex < chunk.length) {
-              words.push(chunk.slice(endIndex));
-            }
-            return words;
-          })
-          .flat(),
+            endIndex = <number>startIndex + word.length;
+          });
+          if (endIndex < chunk.length) {
+            words.push(chunk.slice(endIndex));
+          }
+          return words;
+        }),
       [input] as ChunkArray,
     )
     .map(chunk => (typeof chunk === 'string' ? chunk : chunk.word))
@@ -166,4 +164,14 @@ export function toSentenseCase(...args: Parameters<typeof toNoneCase>) {
     return cased;
   }
   return `${cased[0].toUpperCase()}${cased.slice(1)}`;
+}
+
+/**
+ * 转常见的标题格式，每个单词首字母大写，其余小写，空格连接
+ * @param args
+ * @returns
+ */
+export function toTitleCase(...args: Parameters<typeof parseChunks>) {
+  const chunks = parseChunks(...args);
+  return chunks.map(chunk => `${chunk[0].toUpperCase()}${chunk.slice(1).toLowerCase()}`).join(' ');
 }
