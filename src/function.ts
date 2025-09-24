@@ -313,3 +313,50 @@ export function limitArgs<T extends AnyFunction>(fun: T, max = 1) {
     return fun.call(this, ...args.slice(0, max));
   };
 }
+
+// 唯一 symbol
+export const HOLDER: unique symbol = Symbol('argsHolder');
+type Holder = typeof HOLDER;
+
+// 把可选参数转成 union with undefined
+type NormalizeOptional<T extends any[]> = { [K in keyof T]: undefined extends T[K] ? T[K] | undefined : T[K] };
+
+// 前缀允许占位符，也可以不传
+type WithHolders<T extends any[]> = {
+  [K in keyof T]?: T[K] | Holder;
+};
+
+// 提取占位符对应类型
+type PlaceholderMap<A extends any[], P extends any[]> = A extends [infer AH, ...infer AR]
+  ? P extends [infer PH, ...infer PR]
+    ? AH extends Holder
+      ? [PH, ...PlaceholderMap<AR, PR>]
+      : PlaceholderMap<AR, PR>
+    : []
+  : [];
+
+// 计算剩余尾部参数（前缀没传的）
+type Tail<T extends any[], N extends number, Acc extends any[] = []> = Acc['length'] extends N
+  ? T
+  : T extends [infer H, ...infer R]
+    ? Tail<R, N, [...Acc, any]>
+    : [];
+
+// 返回函数 rest 类型 = 占位符对应类型 + 前缀未传的尾部参数
+type FillRest<A extends any[], P extends any[]> = [...PlaceholderMap<A, P>, ...Tail<P, A['length']>];
+
+export function bindArgs<T extends AnyFunction, A extends WithHolders<NormalizeOptional<Parameters<T>>>>(
+  fn: T,
+  ...args: [...A]
+) {
+  return function binded(
+    this: ThisParameterType<T>,
+    ...rest: FillRest<A, NormalizeOptional<Parameters<T>>>
+  ): ReturnType<T> {
+    let restIndex = 0;
+    const finalArgs = [...args.map(a => (a === HOLDER ? rest[restIndex++] : a)), ...rest.slice(restIndex)];
+    return fn.apply(this, finalArgs);
+  };
+}
+bindArgs.HOLDER = HOLDER;
+/* */

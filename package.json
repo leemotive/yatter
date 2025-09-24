@@ -1,6 +1,6 @@
 {
   "name": "yatter",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "tool collection",
   "main": "lib/index.js",
   "module": "es/index.mjs",
@@ -9,6 +9,7 @@
   "typings": "./typings/index.d.ts",
   "scripts": {
     "test": "npx vitest run",
+    "type": "tsc --noEmit",
     "build": "rm -rf dist es lib typings && rollup -c",
     "postbuild": "node scripts/mergeTypes.mjs & uglifyjs dist/yatter.js -o dist/yatter.min.js",
     "prepare": "husky",

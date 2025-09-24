@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { debounce, isNot, limitArgs, once, poll, retry, throttle } from '../src/function';
+import { bindArgs, debounce, isNot, limitArgs, once, poll, retry, throttle } from '../src/function';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -205,5 +205,14 @@ describe('limitArgs', () => {
       return a + b;
     }
     expect(limitArgs(callback)(1, 8)).toBe(7);
+  });
+});
+
+describe('bindArgs', () => {
+  test('bindArgs', () => {
+    function callback(a: number, b = 6) {
+      return a + b;
+    }
+    expect(bindArgs(callback, bindArgs.HOLDER, 2)(8)).toBe(10);
   });
 });
