@@ -1,6 +1,6 @@
 {
   "name": "yatter",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "tool collection",
   "main": "lib/index.js",
   "module": "es/index.mjs",

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { bindArgs, debounce, isNot, limitArgs, once, poll, retry, throttle } from '../src/function';
+import { isNullOrUndef } from '../src';
+import { bindArgs, debounce, defaultIf, isNot, limitArgs, once, poll, retry, throttle } from '../src/function';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -214,5 +215,26 @@ describe('bindArgs', () => {
       return a + b;
     }
     expect(bindArgs(callback, bindArgs.HOLDER, 2)(8)).toBe(10);
+  });
+});
+
+describe('defaultIf', () => {
+  test.each([
+    [undefined, undefined, 'default'],
+    [Number.NaN, Number.NaN, 'default'],
+    ['', '', 'default'],
+    [null, isNullOrUndef, 'default'],
+  ])('default-%#', (...args) => {
+    // @ts-expect-error 类型不管
+    expect(defaultIf(...args)).toEqual(args.at(-1));
+  });
+
+  test.each([
+    [undefined, null, 'default'],
+    ['ab', Number.NaN, 'default'],
+    ['ab', isNullOrUndef, 'default'],
+  ])('value-%#', (...args) => {
+    // @ts-expect-error 类型不管
+    expect(defaultIf(...args)).toEqual(args.at(0));
   });
 });

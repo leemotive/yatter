@@ -1,3 +1,5 @@
+import { isFunction } from './type';
+
 type DebounceOption<T> = {
   trailing?: T;
   leading?: T extends false | undefined ? true : boolean;
@@ -296,9 +298,19 @@ export function createRace() {
  * @param test 一个返回布尔值的函数
  * @returns
  */
-export function isNot<T extends AnyFunction<boolean>>(test: T) {
-  return function not(...args: Parameters<T>) {
-    return !test(...args);
+export function isNot<T extends AnyFunction<boolean>>(test: T): T;
+/**
+ * 返回一个函数，该函数会判断参数是否和test不相等
+ * @param test
+ */
+export function isNot(test: any): AnyFunction<boolean>;
+
+export function isNot(test: AnyFunction<boolean>) {
+  return function not(...args: any) {
+    if (isFunction(test)) {
+      return !test(...args);
+    }
+    return !Object.is(test, args[0]);
   };
 }
 
@@ -359,4 +371,17 @@ export function bindArgs<T extends AnyFunction, A extends WithHolders<NormalizeO
   };
 }
 bindArgs.HOLDER = HOLDER;
-/* */
+
+/**
+ * 判断在满足一定条件时要使用默认值
+ * @param value 要判断的值
+ * @param predicate 判断条件，如果是函数，则会将value作为参数传递给函数，如果是其它值，则会直接判断value是否和predicate相等
+ * @param fallback 如果判断条件成立，则返回fallback，否则返回value
+ * @returns
+ */
+export function defaultIf<T = any>(value: any, predicate: any, fallback: any): T {
+  if (isFunction(predicate)) {
+    return predicate(value) ? fallback : value;
+  }
+  return Object.is(value, predicate) ? fallback : value;
+}

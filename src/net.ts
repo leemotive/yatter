@@ -18,7 +18,7 @@ export function ipFromInt(num: number) {
   const parts = [];
   while (parts.length < 4) {
     parts.unshift(num & 0xff);
-    // eslint-disable-next-line no-param-reassign
+    // biome-ignore lint/style/noParameterAssign :
     num >>>= 8;
   }
   return parts.join('.');
@@ -97,7 +97,7 @@ export function isIpBetween(ip: string, startIp: string, endIp: string) {
 export function isCidrHost(ip: string, cidr: string) {
   const [netAddress, netLen] = cidr.split('/');
 
-  const maskInt = parseInt('1'.repeat(+netLen).padEnd(24, '0'), 2);
+  const maskInt = Number.parseInt('1'.repeat(+netLen).padEnd(24, '0'), 2);
   const netInt = ipToInt(netAddress);
 
   const startInt = (netInt & maskInt) >>> 0;

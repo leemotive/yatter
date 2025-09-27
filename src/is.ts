@@ -1,4 +1,4 @@
-type NotFunction<T> = T extends AnyFunction ? never : T;
+export type NotFunction<T> = T extends AnyFunction ? never : T;
 export type TestFunction<I> = (input: I) => boolean;
 export type Matcher<I, F> = TestFunction<I> | NotFunction<F>;
 
