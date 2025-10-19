@@ -1,5 +1,17 @@
 import { describe, expect, test } from 'vitest';
-import { cross, diff, groupBy, intersect, max, min, parallel, sorter, union, unique } from '../src/array';
+import {
+  createBoundArray,
+  cross,
+  diff,
+  groupBy,
+  intersect,
+  max,
+  min,
+  parallel,
+  sorter,
+  union,
+  unique,
+} from '../src/array';
 
 describe('sorter', () => {
   const arr = [
@@ -175,5 +187,28 @@ describe('diff', () => {
   ])('intersect-%#', (...args) => {
     // @ts-expect-error 类型不管
     expect(diff(...args.slice(0, -1))).toEqual(args.at(-1));
+  });
+});
+
+describe('createBoundArray', () => {
+  test('push', () => {
+    const arr = createBoundArray(10, { init: Array(10) });
+    arr.fill(10);
+    arr.push(11);
+    expect(arr.length).toBe(10);
+    expect(arr[9]).toBe(11);
+  });
+
+  test('unshift', () => {
+    const arr = createBoundArray(10, { init: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] });
+    expect(arr.length).toBe(10);
+    expect(arr[9]).toBe(11);
+  });
+
+  test('set', () => {
+    const arr = createBoundArray(10, { init: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], keep: 'start' });
+    arr[11] = 12;
+    expect(arr.length).toBe(10);
+    expect(arr.at(-1)).toBe(10);
   });
 });

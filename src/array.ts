@@ -5,7 +5,7 @@
  */
 
 import { self } from './function';
-import { isNullOrUndef } from './type';
+import { isFunction, isNullOrUndef, isString } from './type';
 
 type GroupByReturn<T> = Record<string, T[]>;
 type IndexKey<T> = Exclude<keyof T, keyof { [K in keyof T as T[K] extends string | number ? never : K]: false }>;
@@ -272,4 +272,53 @@ export function ensureArray<T>(input?: OneOrMore<T>): T[] {
     return input;
   }
   return [input];
+}
+
+export function createBoundArray<T>(
+  len: number,
+  { init = [], keep = 'end' }: { init?: T[]; keep?: 'start' | 'end' } = {},
+) {
+  const res: T[] = [];
+  const proxy = new Proxy(res, {
+    get(target, prop) {
+      const v = Reflect.get(target, prop);
+      if (!isFunction(v)) {
+        return v;
+      }
+      return function fun(...args: any[]) {
+        let ret = Reflect.apply(v, target, args);
+        if (target.length > len) {
+          if (keep === 'end') {
+            target.copyWithin(0, -len);
+          }
+          target.length = len;
+        }
+
+        if (['push', 'unshift'].includes(prop as string) && (ret as number) > len) {
+          ret = len;
+        }
+
+        return ret;
+      };
+    },
+    set(target, prop, value) {
+      if (prop === 'length' && value <= target.length) {
+        Reflect.set(target, prop, value);
+        return true;
+      }
+      if (isString(prop) && /^(0|[1-9]\d*)$/.test(prop)) {
+        if (Number(prop) < target.length) {
+          Reflect.set(target, prop, value);
+          return true;
+        }
+      }
+      return true;
+    },
+  });
+
+  if (init.length) {
+    proxy.push(...init);
+  }
+
+  return proxy;
 }
