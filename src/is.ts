@@ -83,3 +83,12 @@ export function isEmpty(input: object | string): boolean {
 export function isBlank(input: string) {
   return !input?.trim();
 }
+
+/**
+ * 判断参数数组中的元素是否都相同
+ * @param inputs
+ * @returns
+ */
+export function isAllSame(inputs: unknown[]): boolean {
+  return isAllMatch(inputs, inputs[0]);
+}
