@@ -68,3 +68,13 @@ export function equalsIgnoreCase(o?: string, c?: string): boolean {
   }
   return o?.toLowerCase() === c?.toLowerCase();
 }
+
+/**
+ * 将字符串转义为正则表达式使用的形式
+ * 转义的字符有 . * + ? ^ $ { } ( ) | [ ] \
+ * @param source 源字符串
+ * @returns 转义后的字符串
+ */
+export function escapeRegExp(source: string) {
+  return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

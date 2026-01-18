@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { equalsIgnoreCase, escapeEntity, joinUnit, uid, unescapeEntity } from '../src/string';
+import { equalsIgnoreCase, escapeEntity, escapeRegExp, joinUnit, uid, unescapeEntity } from '../src/string';
 
 describe('escapeEntity', () => {
   test.each([
@@ -41,4 +41,13 @@ describe('equalsIgnoreCase', () => {
   ])('equalsIgnoreCase-%#', (v, u, r) => {
     expect(equalsIgnoreCase(v, u)).toBe(r);
   });
+});
+
+describe('escapeRegExp', () => {
+  test.each([['abc'], ['a.c*'], ['hello+world?'], ['[test](example){1}'], ['price is $5.00'], ['use \\ to escape']])(
+    'escapeRegExp-%#',
+    input => {
+      expect(new RegExp(escapeRegExp(input)).test(input)).toBeTruthy();
+    },
+  );
 });

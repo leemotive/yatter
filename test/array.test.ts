@@ -194,6 +194,9 @@ describe('createBoundArray', () => {
   test('push', () => {
     const arr = createBoundArray(10, { init: Array(10) });
     arr.fill(10);
+    arr.pop();
+    arr.push(4);
+    expect(arr.at(-1)).toBe(4);
     arr.push(11);
     expect(arr.length).toBe(10);
     expect(arr[9]).toBe(11);
